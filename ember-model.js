@@ -1,6 +1,6 @@
 (function() {
 
-var VERSION = '0.0.11';
+var VERSION = '0.0.12';
 
 if (Ember.libraries) {
   Ember.libraries.register('Ember Model', VERSION);
@@ -1525,6 +1525,19 @@ Ember.RESTAdapter = Ember.Adapter.extend({
       settings.error = function(jqXHR, textStatus, errorThrown) {
         // https://github.com/ebryn/ember-model/issues/202
         if (jqXHR) {
+          if (jqXHR.status === 422) {
+              var response = Ember.$.parseJSON(jqXHR.responseText),
+                  errors = {};
+                  var err = "";
+              if (response.errors !== undefined) {
+                  var jsonErrors = response.errors;
+                  Ember.EnumerableUtils.forEach(Ember.keys(jsonErrors), function(key) {
+                    err += jsonErrors[key]+"\n";
+                    errors[key] = jsonErrors[key];
+                  });
+                  alert(err);
+              }
+          } 
           jqXHR.then = null;
         }
 
